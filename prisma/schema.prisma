@@ -12,6 +12,8 @@ model Branch {
   name String @unique
   logo String 
   address String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   @@map("branches")
 
   rooms Room[]

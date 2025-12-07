@@ -1,4 +1,4 @@
-import {IsString, IsUUID } from "class-validator"
+import { IsDateString, IsOptional, IsString } from "class-validator"
 
 
 export class CreateBranchDto {
@@ -9,6 +9,5 @@ export class CreateBranchDto {
     logo: string
     
     @IsString()
-    address : string
-    
+    address: string
 }

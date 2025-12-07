@@ -1,26 +1,66 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { UpdateBranchDto } from './dto/update-branch.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+
 
 @Injectable()
 export class BranchesService {
-  create(createBranchDto: CreateBranchDto) {
-    return 'This action adds a new branch';
+  constructor(private readonly prisma: PrismaService) { }
+  
+  async create(data: CreateBranchDto) {
+    const branch = await this.prisma.branch.create({ data });
+    return {
+      success: true,
+      data: branch,
+    };
   }
 
-  findAll() {
-    return `This action returns all branches`;
+  async findAll() {
+    const branches = this.prisma.branch.findMany();
+    return {
+      success: true,
+      data: branches,
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} branch`;
+  async findOne(id: string) {
+    const branch = await this.prisma.branch.findUnique({ where: { id } });
+
+    if (!branch) throw new NotFoundException('branch not found');
+
+    return {
+      success: true,
+      data: branch,
+    };
   }
 
-  update(id: number, updateBranchDto: UpdateBranchDto) {
-    return `This action updates a #${id} branch`;
+  async update(id: string, dto: UpdateBranchDto) {
+    const branch = await this.prisma.branch.findUnique({ where: { id } });
+
+    if (!branch) throw new NotFoundException('branch not found');
+
+    const updatedBranch = await  this.prisma.branch.update({
+      where: { id },
+      data: dto,
+    });
+
+    return {
+      success: true,
+      data : updatedBranch
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} branch`;
+  async remove(id: string) {
+    const branch = await this.prisma.branch.findUnique({ where: { id } });
+
+    if (!branch) throw new NotFoundException('branch not found');
+
+    const deletedBranch = await this.prisma.branch.delete({ where: { id } });
+
+    return {
+      success: true,
+      message: 'Branch deleted successfully'
+    }
   }
 }
