@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Branch {
+  id  String @id @default(uuid())
+  name String @unique
+  logo String 
+  address String
+  @@map("branches")
+
+  rooms Room[]
+  courses Course[]
+  groups Group[]
+}
+
+model Room {
+  id String @id @default(uuid())
+  name String @unique
+  capacity String
+  branchId String 
+  branch  Branch @relation(fields: [branchId], references: [id])
+
+  @@map("rooms")
+}
+
+model Course {
+  id String @id @default(uuid())
+  name String @unique
+  price Decimal @db.Decimal(10, 2)
+  level Int
+  durationMonth Int
+
+  branchId String 
+  branch Branch @relation(fields: [branchId], references: [id])
+
+  groups Group[]
+  @@map("courses")
+}
+
+model Group {
+  id String @id @default(uuid())
+  name String @unique
+
+  courseId String 
+  course Course @relation(fields: [courseId], references: [id])
+
+  startedDate DateTime @db.Date
+  endDate DateTime @db.Date
+
+  branchId String
+
+  branch Branch @relation(fields: [branchId], references: [id])
+
+  @@map("groups")
+}
