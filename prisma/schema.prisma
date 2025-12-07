@@ -7,6 +7,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Status {
+  ACTIVE 
+  INACTIVE
+}
+
+enum CourseLevels {
+  BEGINNER
+  INTERMEDIATE
+  ADVENCED
+}
+
+enum StaffRole {
+  ADMIN
+  MANAGER
+  RECEPTIONS
+}
+
 model Branch {
   id  String @id @default(uuid())
   name String @unique
@@ -19,6 +36,11 @@ model Branch {
   rooms Room[]
   courses Course[]
   groups Group[]
+  teachers Teacher[]
+  teacherGroups TeacherGroup[]
+  students Student[]
+  studentGroups StudentsGroup[]
+  staffs Staff[]
 }
 
 model Room {
@@ -26,8 +48,11 @@ model Room {
   name String @unique
   capacity String
   branchId String 
+  status Status @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   branch  Branch @relation(fields: [branchId], references: [id])
-
+  groups Group[]
   @@map("rooms")
 }
 
@@ -37,8 +62,12 @@ model Course {
   price Decimal @db.Decimal(10, 2)
   level Int
   durationMonth Int
-
+  durationHours Float
   branchId String 
+  status Status @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
   branch Branch @relation(fields: [branchId], references: [id])
 
   groups Group[]
@@ -56,8 +85,97 @@ model Group {
   endDate DateTime @db.Date
 
   branchId String
-
+  roomId String
+  status Status @default(ACTIVE) 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  teacherGroups TeacherGroup[]
+  studentGroups StudentsGroup[]
+  
   branch Branch @relation(fields: [branchId], references: [id])
+  room Room @relation(fields: [roomId], references: [id])
 
   @@map("groups")
+  @@unique([courseId, name])
+}
+
+
+model Teacher {
+  id String @id @default(uuid())
+  fullName String 
+  photo String?
+  email String @unique
+  phone String @unique
+  password String
+  profession String[]
+  branchId String
+  status Status @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  teacherGroups TeacherGroup[]
+  branch Branch @relation(fields: [branchId], references: [id])
+  @@map("teachers")
+}
+
+model TeacherGroup {
+  teacherId String
+  groupId String
+  branchId String
+  status Status @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+  group Group @relation(fields: [groupId], references: [id])
+  branch Branch @relation(fields: [branchId], references: [id])
+
+  @@unique([teacherId, groupId])
+  @@map("teacherGroups")
+}
+
+model Student {
+  id String @id @default(uuid())
+  fullName String
+  photo String?
+  email String  @unique
+  phone String @unique
+  password String
+  branchId String
+  status Status @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  studentGroups StudentsGroup[]
+  branch Branch @relation(fields: [branchId], references: [id])
+
+  @@map("students")
+}
+
+model StudentsGroup {
+  studentId String
+  groupId String
+  branchId String
+  status Status @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id])
+  group Group @relation(fields: [groupId], references: [id])
+  branch Branch @relation(fields: [branchId], references: [id])
+  @@unique([studentId, groupId])
+  @@map("studentsGroups")
+}
+
+model Staff {
+  id String @id @default(uuid())
+  fullName String
+  photo String?
+  phone String  @unique
+  password String
+  role StaffRole
+  branchId String
+  status Status @default(ACTIVE)
+  
+  branch Branch @relation(fields: [branchId], references: [id])
+  @@map("staffs")
+
 }

@@ -1,14 +1,17 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BranchesModule } from './branches/branches.module';
-import { RoomsModule } from './rooms/rooms.module';
-import { CoursesModule } from './courses/courses.module';
-import { GroupsModule } from './groups/groups.module';
+import { BranchesModule } from './modules/branches/branches.module';
+import { RoomsModule } from './modules/rooms/rooms.module';
+import { CoursesModule } from './modules/courses/courses.module';
+import { GroupsModule } from './modules/groups/groups.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { CloudinaryModule } from 'nestjs-cloudinary';
 import { FileUploadModule } from './uploads/fileUploads.module';
 import { ConfigModule } from '@nestjs/config';
+import { TeachersModule } from './modules/teachers/teachers.module';
+import { StudentsModule } from './modules/students/students.module';
+import { StaffsModule } from './modules/staffs/staffs.module';
 
 @Module({
   imports: [
@@ -26,6 +29,9 @@ import { ConfigModule } from '@nestjs/config';
       }),
     }),
     PrismaModule,
+    TeachersModule,
+    StudentsModule,
+    StaffsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
