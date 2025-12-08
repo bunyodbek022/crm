@@ -17,7 +17,7 @@ export class BranchesService {
   }
 
   async findAll() {
-    const branches = this.prisma.branch.findMany();
+    const branches = await this.prisma.branch.findMany();
     return {
       success: true,
       data: branches,

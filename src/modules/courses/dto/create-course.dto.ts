@@ -32,5 +32,5 @@ export class CreateCourseDto {
 
   @IsUUID()
   @IsNotEmpty()
-  branchID: string;
+  branchId: string;
 }

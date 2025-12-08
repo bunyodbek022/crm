@@ -1,26 +1,103 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import * as bcrypt from 'bcrypt';
+import { MailService } from 'src/common/mailer/mailer.service';
 
 @Injectable()
 export class StudentsService {
-  create(createStudentDto: CreateStudentDto) {
-    return 'This action adds a new student';
+  constructor(private readonly prisma: PrismaService, private sendOtp : MailService) {}
+
+  async create(data: CreateStudentDto) {
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+    const student = await this.prisma.student.create({
+      data: {
+        fullName: data.fullName,
+        photo: data.photo,
+        email: data.email,
+        phone: data.phone,
+        password: hashedPassword,
+        branchId: data.branchId,
+      },
+    });
+    const otp = Math.floor(Math.random() * 100000)
+    await this.sendOtp.sendMail(student.email, 'Otp Code', otp )
+    return {
+      success: true,
+      data: 'Student created successfully',
+    };
   }
 
-  findAll() {
-    return `This action returns all students`;
+  async findAll() {
+    const students = await this.prisma.student.findMany({
+      select: {
+        fullName: true,
+        photo: true,
+        email: true,
+        phone: true,
+        branchId: true,
+      },
+    });
+    return {
+      success: true,
+      data: students,
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} student`;
+  async findOne(id: string) {
+    const student = await this.prisma.student.findUnique({
+      where: { id },
+      select: {
+        fullName: true,
+        photo: true,
+        email: true,
+        phone: true,
+        branchId: true,
+      },
+    });
+
+    if (!student) throw new NotFoundException('student not found');
+
+    return {
+      success: true,
+      data: student,
+    };
   }
 
-  update(id: number, updateStudentDto: UpdateStudentDto) {
-    return `This action updates a #${id} student`;
+  async update(id: string, dto: UpdateStudentDto) {
+    const student = await this.prisma.student.findUnique({ where: { id } });
+
+    if (!student) throw new NotFoundException('student not found');
+
+    const updatedStudent = await this.prisma.student.update({
+      where: { id },
+      data: dto,
+      select: {
+        fullName: true,
+        photo: true,
+        email: true,
+        phone: true,
+        branchId: true
+      }
+    });
+
+    return {
+      success: true,
+      data: updatedStudent,
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} student`;
+  async remove(id: string) {
+    const student = await this.prisma.student.findUnique({ where: { id } });
+
+    if (!student) throw new NotFoundException('student not found');
+
+    const deletedStudent = await this.prisma.student.delete({ where: { id } });
+
+    return {
+      success: true,
+      message: 'student deleted successfully',
+    };
   }
 }
