@@ -171,9 +171,12 @@ model Staff {
   photo String?
   phone String  @unique
   password String
+  email String  @unique
   role StaffRole
   branchId String
   status Status @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   
   branch Branch @relation(fields: [branchId], references: [id])
   @@map("staffs")

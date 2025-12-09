@@ -16,7 +16,6 @@ import { MailService } from "./mailer.service";
                     pass : process.env.APP_PASSWORD
                 }
             },
-
             defaults: {
                 from : "Project Team<gulomjonovbunyodbek60@gmail.com>"
             },

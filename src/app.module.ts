@@ -13,6 +13,7 @@ import { TeachersModule } from './modules/teachers/teachers.module';
 import { StudentsModule } from './modules/students/students.module';
 import { StaffsModule } from './modules/staffs/staffs.module';
 import { MailModule } from './common/mailer/mailer.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { MailModule } from './common/mailer/mailer.module';
     TeachersModule,
     StudentsModule,
     StaffsModule,
-    MailModule
+    MailModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,20 +1,32 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { MailService } from 'src/common/mailer/mailer.service';
+import * as bcrypt from "bcrypt"
 
 @Injectable()
 export class TeachersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, private readonly sendPassword: MailService) {}
 
   async create(data: CreateTeacherDto) {
+
+    const existEmail = await this.prisma.teacher.findUnique({ where: { email: data.email } });
+    
+        if (existEmail) throw new BadRequestException("Email aready exist");
+    
+        const existPhone = await this.prisma.teacher.findUnique({ where: { phone: data.phone } });
+    
+    if (existPhone) throw new BadRequestException("Phone aready exist");
+    await this.sendPassword.sendMail(data.email, 'Your password', data.password)
+    const hashedPassword = await bcrypt.hash(data.password, 10);
     const teacher = await this.prisma.teacher.create({
       data: {
         fullName: data.fullName,
         photo: data.photo,
         email: data.email,
         phone: data.phone,
-        password: data.password,
+        password: hashedPassword,
         profession: data.profession,
         branchId: data.branchId,
       },

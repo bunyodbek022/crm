@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsArray } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsArray, IsEmail } from 'class-validator';
 
 export class CreateTeacherDto {
   @IsString()
@@ -11,6 +11,7 @@ export class CreateTeacherDto {
 
   @IsString()
   @IsNotEmpty()
+  @IsEmail()
   email: string;
 
   @IsString()

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -7,6 +8,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { loginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
+import * as bcrypt from "bcrypt"
+import { log } from 'console';
 
 @Injectable()
 export class AuthService {
@@ -15,25 +18,78 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async loginStudent(data: loginUserDto, res: Response) {
+  async loginStudent(data: loginUserDto) {
     try {
       const studentExist = await this.prisma.student.findUnique({
-        where: { phone: data.phone },
+        where: { email : data.email },
       });
       if (!studentExist) {
         throw new NotFoundException('Student not found');
       }
+      const isMatch = await bcrypt.compare(data.password, studentExist.password);
+      if (!isMatch) throw new BadRequestException("email or password incorrect");
       const token = this.jwtService.sign({
         id: studentExist.id,
         phone: studentExist.phone,
         email: studentExist.email,
       });
-
-      res.cookie('token', token, {
-        httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+      
+      return {
+        success: true,
+        message: "Student sign in successfully",
+        token
+      }
     } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async loginStaff(data: loginUserDto) {
+    try {
+      const staffExist = await this.prisma.staff.findUnique({
+        where: { email : data.email },
+      });
+      if (!staffExist) {
+        throw new NotFoundException('staff not found');
+      }
+      const isMatch = await bcrypt.compare(data.password, staffExist.password);
+      if (!isMatch) throw new BadRequestException("email or password incorrect");
+      const token = this.jwtService.sign({
+        id: staffExist.id,
+        phone: staffExist.phone,
+        email: staffExist.email,
+        roles : staffExist.role
+      });
+
+      return {
+        token
+      }
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async loginTeacher(data: loginUserDto) {
+    try {
+      const teacherExist = await this.prisma.teacher.findUnique({
+        where: { email : data.email },
+      });
+      if (!teacherExist) {
+        throw new NotFoundException('teacher not found');
+      }
+      const isMatch = await bcrypt.compare(data.password, teacherExist.password);
+      if (!isMatch) throw new BadRequestException("email or password incorrect");
+      const token = this.jwtService.sign({
+        id: teacherExist.id,
+        phone: teacherExist.phone,
+        email: teacherExist.email,
+      });
+
+      return {
+        token
+      }
+    } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException();
     }
   }

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -7,9 +7,18 @@ import { MailService } from 'src/common/mailer/mailer.service';
 
 @Injectable()
 export class StudentsService {
-  constructor(private readonly prisma: PrismaService, private sendOtp : MailService) {}
+  constructor(private readonly prisma: PrismaService, private sendPassword : MailService) {}
 
   async create(data: CreateStudentDto) {
+    const existEmail = await this.prisma.student.findUnique({ where: { email: data.email } });
+
+    if (existEmail) throw new BadRequestException("Email aready exist");
+
+    const existPhone = await this.prisma.student.findUnique({ where: { phone: data.phone } });
+
+    if (existPhone) throw new BadRequestException("Phone aready exist");
+
+    await this.sendPassword.sendMail(data.email, 'Your password', data.password)
     const hashedPassword = await bcrypt.hash(data.password, 10);
     const student = await this.prisma.student.create({
       data: {
@@ -21,8 +30,6 @@ export class StudentsService {
         branchId: data.branchId,
       },
     });
-    const otp = Math.floor(Math.random() * 100000)
-    await this.sendOtp.sendMail(student.email, 'Otp Code', otp )
     return {
       success: true,
       data: 'Student created successfully',
