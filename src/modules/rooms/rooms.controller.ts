@@ -7,35 +7,35 @@ import { RolesGuard } from 'src/common/guards/role.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 
 @UseGuards(AuthGuard, RolesGuard)
-@Controller('rooms')
+@Controller('room')
 export class RoomsController {
   constructor(private readonly roomsService: RoomsService) {}
 
-  @Roles('ADMIN', 'MANAGER', 'RESCRIPTION')
+  @Roles('ADMIN', 'MANAGER', 'RECEPTION')
   @Post()
   create(@Body() createRoomDto: CreateRoomDto) {
     return this.roomsService.create(createRoomDto);
   }
 
-  @Roles('ADMIN', 'MANAGER', 'RESCRIPTION')
+  @Roles('ADMIN', 'MANAGER', 'RECEPTION')
   @Get()
   findAll() {
     return this.roomsService.findAll();
   }
 
-  @Roles('ADMIN', 'MANAGER', 'RESCRIPTION')
+  @Roles('ADMIN', 'MANAGER', 'RECEPTION')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.roomsService.findOne(id);
   }
 
-  @Roles('ADMIN', 'MANAGER', 'RESCRIPTION')
+  @Roles('ADMIN', 'MANAGER', 'RECEPTION')
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateRoomDto: UpdateRoomDto) {
     return this.roomsService.update(id, updateRoomDto);
   }
 
-  @Roles('ADMIN', 'MANAGER', 'RESCRIPTION')
+  @Roles('ADMIN', 'MANAGER', 'RECEPTION')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.roomsService.remove(id);
