@@ -102,7 +102,7 @@ export class AuthService {
     }
   }
 
-  async getDashboard(userFromToken, tableName : string) {
+  async getDashboard(userFromToken, tableName: string) {
     if (userFromToken.roles && tableName == 'staff') {
       return await this.prisma.staff.findUnique({
         where: { id: userFromToken.id },
@@ -144,10 +144,20 @@ export class AuthService {
         branchId: true,
         createdAt: true,
         updatedAt: true,
+        teacherGroups: {
+          select: {
+            group: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
 
-    if (student  && tableName == 'student') {
+    if (student && tableName == 'student') {
       return {
         success: true,
         data: student,

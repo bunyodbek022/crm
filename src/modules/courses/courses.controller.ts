@@ -7,7 +7,7 @@ import { RolesGuard } from 'src/common/guards/role.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 
 @UseGuards(AuthGuard, RolesGuard)
-@Controller('courses')
+@Controller('course')
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 

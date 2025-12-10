@@ -13,8 +13,8 @@ export class GroupsService {
         courseId: data.courseId,
         branchId: data.branchId,
         roomId: data.roomId,
-        startedDate: data.startedDate,
-        endDate: data.endDate,
+        startedDate: new Date(data.startedDate),
+        endDate: new Date(data.endDate),
       },
       include: {
         course: true,

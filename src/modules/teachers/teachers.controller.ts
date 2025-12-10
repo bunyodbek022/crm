@@ -6,6 +6,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
 import { AuthService } from '../auth/auth.service';
+import { AssignTeacherToGroupDto } from './dto/assignTeacherToGroup.dto';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Roles('ADMIN', 'MANAGER', 'RECEPTION')
@@ -18,6 +19,11 @@ export class TeachersController {
   @Post()
   create(@Body() createTeacherDto: CreateTeacherDto) {
     return this.teachersService.create(createTeacherDto);
+  }
+
+   @Post('assign-group')
+  async assignGroup(@Body() dto: AssignTeacherToGroupDto) {
+    return this.teachersService.createTeacherGroup(dto);
   }
 @UseGuards(AuthGuard)
   @Get('profile')
