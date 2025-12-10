@@ -23,7 +23,7 @@ export class StudentsController {
   @UseGuards(AuthGuard)
     @Get('profile')
     async getDashboard(@Request() req) {
-      return this.authService.getDashboard(req.user);
+      return this.authService.getDashboard(req.user, 'student');
     }
 
   @Get()

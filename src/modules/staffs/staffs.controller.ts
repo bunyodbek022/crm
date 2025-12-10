@@ -29,7 +29,7 @@ export class StaffsController {
   @UseGuards(AuthGuard)
   @Get('profile')
   async getDashboard(@Request() req) {
-    return this.authService.getDashboard(req.user);
+    return this.authService.getDashboard(req.user, 'staff');
   }
 
   @Roles('ADMIN', 'MANAGER')
