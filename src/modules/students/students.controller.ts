@@ -19,7 +19,6 @@ import { AuthService } from '../auth/auth.service';
 import { AssignStudentToGroupDto } from './dto/assign-studentToGroup.dto';
 
 @UseGuards(AuthGuard, RolesGuard)
-@Roles('ADMIN', 'MANAGER', 'RECEPTION')
 @Controller('student')
 export class StudentsController {
   constructor(
@@ -27,36 +26,44 @@ export class StudentsController {
     private readonly authService: AuthService,
   ) {}
 
+  @Roles('ADMIN', 'MANAGER', 'RECEPTION')
   @Post()
   create(@Body() createStudentDto: CreateStudentDto) {
     return this.studentsService.create(createStudentDto);
   }
 
+  @Roles('ADMIN', 'MANAGER', 'RECEPTION')
   @Post('assign-group')
   async assignGroup(@Body() dto: AssignStudentToGroupDto) {
     return this.studentsService.createStudentGroup(dto);
   }
+
+
 
   @Get('profile')
   async getDashboard(@Request() req) {
     return this.authService.getDashboard(req.user, 'student');
   }
 
+  @Roles('ADMIN', 'MANAGER', 'RECEPTION')
   @Get()
   findAll() {
     return this.studentsService.findAll();
   }
 
+  @Roles('ADMIN', 'MANAGER', 'RECEPTION')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.studentsService.findOne(id);
   }
 
+  @Roles('ADMIN', 'MANAGER', 'RECEPTION')
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
     return this.studentsService.update(id, updateStudentDto);
   }
 
+  @Roles('ADMIN', 'MANAGER', 'RECEPTION')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.studentsService.remove(id);

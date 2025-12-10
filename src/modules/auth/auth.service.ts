@@ -7,7 +7,6 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { loginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -130,6 +129,16 @@ export class AuthService {
         branchId: true,
         createdAt: true,
         updatedAt: true,
+        studentGroups: {
+          select: {
+            group: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
     const teacher = await this.prisma.teacher.findUnique({

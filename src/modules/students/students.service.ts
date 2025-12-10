@@ -40,6 +40,7 @@ export class StudentsService {
   async findAll() {
     const students = await this.prisma.student.findMany({
       select: {
+        id: true,
         fullName: true,
         photo: true,
         email: true,
