@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { StudentsService } from './students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
@@ -6,12 +16,14 @@ import { AuthGuard } from 'src/common/guards/auth.guard';
 import { RolesGuard } from 'src/common/guards/role.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { AuthService } from '../auth/auth.service';
+import { AssignStudentToGroupDto } from './dto/assign-studentToGroup.dto';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Roles('ADMIN', 'MANAGER', 'RECEPTION')
 @Controller('student')
 export class StudentsController {
-  constructor(private readonly studentsService: StudentsService, 
+  constructor(
+    private readonly studentsService: StudentsService,
     private readonly authService: AuthService,
   ) {}
 
@@ -20,11 +32,15 @@ export class StudentsController {
     return this.studentsService.create(createStudentDto);
   }
 
-  @UseGuards(AuthGuard)
-    @Get('profile')
-    async getDashboard(@Request() req) {
-      return this.authService.getDashboard(req.user, 'student');
-    }
+  @Post('assign-group')
+  async assignGroup(@Body() dto: AssignStudentToGroupDto) {
+    return this.studentsService.createStudentGroup(dto);
+  }
+
+  @Get('profile')
+  async getDashboard(@Request() req) {
+    return this.authService.getDashboard(req.user, 'student');
+  }
 
   @Get()
   findAll() {

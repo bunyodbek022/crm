@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { MailService } from 'src/common/mailer/mailer.service';
+import { AssignStudentToGroupDto } from './dto/assign-studentToGroup.dto';
 
 @Injectable()
 export class StudentsService {
@@ -108,5 +109,40 @@ export class StudentsService {
     };
   }
 
+  async createStudentGroup(data: AssignStudentToGroupDto) {
+      try {
+        const exists = await this.prisma.studentsGroup.findUnique({
+          where: {
+            studentId_groupId: {
+              studentId: data.studentId,
+              groupId: data.groupId,
+            },
+          },
+        });
+  
+        if (exists) {
+          throw new BadRequestException(
+            'This student already assigned this group',
+          );
+        }
+  
+        const result = await this.prisma.studentsGroup.create({
+          data: {
+            studentId: data.studentId,
+            groupId: data.groupId,
+            branchId: data.branchId,
+          },
+        });
+        return {
+          success: true,
+          data: result,
+        };
+      } catch (error) {
+        console.log(error);
+        throw new InternalServerErrorException(
+          'There is a problem with createStudentGroup',
+        );
+      }
+    }
   
 }

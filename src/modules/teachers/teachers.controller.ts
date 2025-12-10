@@ -25,7 +25,8 @@ export class TeachersController {
   async assignGroup(@Body() dto: AssignTeacherToGroupDto) {
     return this.teachersService.createTeacherGroup(dto);
   }
-@UseGuards(AuthGuard)
+
+  
   @Get('profile')
   async getDashboard(@Request() req) {
     return this.authService.getDashboard(req.user, 'teacher');
