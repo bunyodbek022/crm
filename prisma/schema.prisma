@@ -68,7 +68,7 @@ model Course {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  branch Branch @relation(fields: [branchId], references: [id])
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   groups Group[]
   @@map("courses")
@@ -79,7 +79,7 @@ model Group {
   name String @unique
 
   courseId String 
-  course Course @relation(fields: [courseId], references: [id])
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   startedDate DateTime @db.Date
   endDate DateTime @db.Date
@@ -92,8 +92,8 @@ model Group {
   teacherGroups TeacherGroup[]
   studentGroups StudentsGroup[]
   
-  branch Branch @relation(fields: [branchId], references: [id])
-  room Room @relation(fields: [roomId], references: [id])
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  room Room @relation(fields: [roomId], references: [id],onDelete: Cascade, onUpdate: Cascade)
 
   @@map("groups")
   @@unique([courseId, name])
@@ -113,7 +113,7 @@ model Teacher {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   teacherGroups TeacherGroup[]
-  branch Branch @relation(fields: [branchId], references: [id])
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   @@map("teachers")
 }
 
@@ -125,9 +125,9 @@ model TeacherGroup {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  teacher Teacher @relation(fields: [teacherId], references: [id])
-  group Group @relation(fields: [groupId], references: [id])
-  branch Branch @relation(fields: [branchId], references: [id])
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([teacherId, groupId])
   @@map("teacherGroups")
@@ -145,7 +145,7 @@ model Student {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   studentGroups StudentsGroup[]
-  branch Branch @relation(fields: [branchId], references: [id])
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("students")
 }
@@ -158,9 +158,9 @@ model StudentsGroup {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  student Student @relation(fields: [studentId], references: [id])
-  group Group @relation(fields: [groupId], references: [id])
-  branch Branch @relation(fields: [branchId], references: [id])
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   @@unique([studentId, groupId])
   @@map("studentsGroups")
 }
@@ -178,7 +178,7 @@ model Staff {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  branch Branch @relation(fields: [branchId], references: [id])
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   @@map("staffs")
 
 }

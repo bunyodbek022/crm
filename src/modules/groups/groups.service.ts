@@ -69,7 +69,7 @@ export class GroupsService {
 
     if (!group) throw new NotFoundException('group not found');
 
-    const deletedGroup = await this.prisma.group.delete({ where: { id } });
+    const deletedGroup = await this.prisma.group.delete({ where: { id }, });
 
     return {
       success: true,
